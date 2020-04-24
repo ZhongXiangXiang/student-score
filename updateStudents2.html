@@ -30,7 +30,7 @@
                             id: aInputs[4].value
                         },
                         success: function(result){
-                            alert(result);
+                            // alert(result);
                             var obj = JSON.parse(result);
                             if(obj.code){   
                                 oAlert.className = 'alert alert-danger';
@@ -102,7 +102,7 @@
         <div class="container">
             <div class="panel panel-primary" id="update">
                 <div class="panel-heading">
-                    修改用户数据
+                    修改学员成绩
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
@@ -125,7 +125,7 @@
                         <input type="hidden" name="id" class="form-control">  <!-- 隐藏表单 -->
                     </div>
                     <div id="alert_info" class="alert alert-danger">xxxxxx</div>
-                    <a href="userList.html">查看用户列表</a>
+                    <a href="showStudents.html">查看学员成绩</a>
                     <button id="btn1" class="btn btn-primary pull-right">提交</button>
                 </div>
             </div>

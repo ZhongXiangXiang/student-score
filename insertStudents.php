@@ -28,6 +28,16 @@
     //4.选择数据库
     mysql_select_db('yyy');
 
+    $sql2 = "SELECT * FROM students WHERE name='{$name}'";
+    $res2 = mysql_query($sql2);
+    $row2 = mysql_fetch_assoc($res2);
+    if($row2){
+        $responseData['code'] = 3;
+        $responseData['message'] = '该学员姓名已存在';
+        echo json_encode($responseData);
+        exit;
+    }
+
     //5.准备sql语句进行插入操作
     $sql = "INSERT INTO students(name,english,math,chinese) VALUES('{$name}',{$english},{$math},{$chinese})";  //因为没有id，不是全字段，所以要写相应字段，这里最好不要空格，VALUES中字符串和日期放在单引号里
     // echo $sql;
@@ -47,6 +57,7 @@
         echo json_encode($responseData); //将关联数组转换成json格式字符串统一返回
     }
 
+    
     //8.关闭数据库
     mysql_close($link);
 ?>

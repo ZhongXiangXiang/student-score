@@ -36,12 +36,17 @@
                         success: function(result){
                             // alert(result);
                             var obj = JSON.parse(result);
-                            alert(obj.message);
+                            if(obj.code){
+                                alert(obj.message);
+                            }else{
+                                alert(obj.message);
 
-                            //增加成功后删除内容
-                            for(var i = 0; i < aInputs.length; i++){
-                                aInputs[i].value = '';
+                                //增加成功后删除内容
+                                for(var i = 0; i < aInputs.length; i++){
+                                    aInputs[i].value = '';
+                                }
                             }
+                            
                         },
                         error: function(msg){
                             alert(msg);
