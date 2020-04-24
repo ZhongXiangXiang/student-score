@@ -30,12 +30,12 @@
                                 oAlert.className = 'alert alert-danger';
                             }else{   //如果为0，不为真，登录成功
                                 oAlert.className = 'alert alert-success';
+                                setTimeout(function(){
+                                    location.href = 'showStudents.html';
+                                }, 2000);
                             }
                             oAlert.style.display = 'block';
                             oAlert.innerHTML = obj.message;
-                            setTimeout(function(){
-                                location.href = 'showStudents.html';
-                            }, 2000);
                         },
                         error: function(msg){
                             alert(msg);
