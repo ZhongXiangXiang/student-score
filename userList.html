@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>获取用户列表</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/buttons.css">
+        <script src="ajax.js"></script>
+        <script src="tool.js"></script>
+        <script>
+            window.onload = function(){
+                var oBtn = document.getElementById('btn1');
+                var oT1 = document.getElementById('t1');
+
+                oBtn.onclick = function(){
+                    $ajax({
+                        method: 'get',
+                        url: 'userList.php',
+                        success: function(result){
+                            var arr = JSON.parse(result);  //解析成数组 
+                            //通过循环创建节点添加到页面上  （这里通过字符串拼接的方式）
+                            var str = ``;
+                            for(var i = 0; i < arr.length; i++){
+                                str += `<tr>
+                                    <td>${arr[i].id}</td>
+                                    <td>${arr[i].username}</td>
+                                    <td>${arr[i].password}</td>    
+                                    <td>${showTime(Number(arr[i].create_time))}</td>
+                                    <td id='${arr[i].id}'>
+                                        <a href='#'>删除</a>
+                                        /
+                                        <a href='updateStudents.html?id=${arr[i].id}'>修改</a>
+                                    </td>
+                                </tr>`;   //直接用加密后的密码。ECMA6语法，大括号${}里不仅可写变量，还可写表达式和函数调用。删除、修改不加载数据，如果要给它们添加点击事件，最好通过事件委托完成。showTime()自己封装的函数
+                            }
+
+                            oT1.innerHTML = str;
+                        },
+                        error: function(msg){
+                            alert(msg);
+                        }
+                    })
+                }
+
+                //给所有的删除按钮和修改按钮添加点击
+                /* 
+                用户数据的删除：
+
+                    删除、修改按钮都是后添加进来的，所以将点击事件添加在其父节点上，通过事件委托的方式，找到当前的触发对象，如果触发对象是a，并且里面的innerHTML是删除，即点击删除按钮，拿到当前要删除用户的id，通过ajax将id发送到.php页面；php页面通过$_GET拿到id，连接数据库，通过delete语句将id等于这个id的用户数据从数据库删除，并将删除的响应返回前台；前台拿到数据后，如果删除成功，直接将页面上的这个节点删除，如果失败，提醒用户哪个地方失败。
+                */
+                oT1.onclick = function(ev){
+                    var e = ev || window.event; //事件对象
+                    var target = e.target || window.event.srcElement;  //目标/触发对象
+                    if(target.nodeName.toLowerCase() == 'a' && target.innerHTML == '删除'){
+                        //拿到当前要删除的数据的id
+                        var id = target.parentNode.id;
+                        $ajax({
+                            method: 'get',
+                            url: 'deleteStudents.php',
+                            data: {
+                                id: id    // get提交将id拼接到url后面，传到deleteStudents.php页面后，可在php页面通过$_GET数组拿到删除的这条数据的id
+                            },
+                            success: function(result){
+                                var obj = JSON.parse(result);
+                                if(!obj.code){   //为0，删除成功
+                                    oT1.removeChild(target.parentNode.parentNode);
+                                    alert(obj.message);
+                                }else{
+                                    alert(obj.message);
+                                }
+                            },
+                            error: function(msg){
+                                alert(msg);
+                            }
+                        })
+                        return false;  //阻止点击删除进行跳转的默认行为
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2>获取用户列表</h2>
+                </div>
+                <div class="panel-body">
+                    <button id="btn1" class="form-control button button-3d button-primary button-rounded">获取用户列表</button>
+                    <br><br>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>用户id</th>
+                                <th>用户名</th>
+                                <th>密码</th>
+                                <th>注册日期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="t1">
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
+    </body>
+</html>

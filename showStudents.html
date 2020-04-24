@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>获取学员成绩</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="ajax.js"></script>
+        <script>
+            /* 
+            bootcss.com 网站
+
+                【注【
+                .css  开发版本（有严格的代码缩进，空格、换行(占空间)、代码注释，易于阅读）
+                .min.css  上线版本（压缩了，节省空间）
+
+                bootstrap.css  别人写好的css样式
+
+
+            前后端交互：(前后端分离开)
+                网络下所有用户都可访问这个页面，只要将localhost换成我电脑的id，通过这个连接就可访问。在html页面点击按钮，ajax发送请求，请求showStudents.php页面去处理数据库中的数据（php页面数据全部取出，并拼接成一个索引数组，转成json格式字符串输出），ajax将php页面传入的字符串运送到.html页面上，然后在.html页面的success方法里，直接拿到数据，通过循环解析到页面上
+             */
+            window.onload = function(){
+                var oBtn = document.getElementById('btn1');
+                var oT1 = document.getElementById('t1');
+                oBtn.onclick = function(){
+                    $ajax({
+                        method: 'get',
+                        url: 'showStudents_json.php',
+                        success: function(result){
+                            var arr = JSON.parse(result);
+                            var str = ``;
+                            for(var i = 0; i < arr.length; i++){
+                                str += `<tr>
+                                    <td>${arr[i].id}</td>
+                                    <td>${arr[i].name}</td>
+                                    <td>${arr[i].english}</td>
+                                    <td>${arr[i].math}</td>
+                                    <td>${arr[i].chinese}</td>
+                                    <td id='${arr[i].id}'>
+                                        <a href='#'>删除</a>
+                                        /
+                                        <a href='updateStudents2.html?id=${arr[i].id}'>修改</a>
+                                    </td>
+                                </tr>`;
+                            }
+                            oT1.innerHTML = str;
+                        },
+                        error: function(msg){
+                            alert(msg);
+                        }
+                    })
+                }
+
+                oT1.onclick = function(ev){
+                    var e = ev || window.event; //事件对象
+                    var target = e.target || window.event.srcElement;  //目标/触发对象
+                    if(target.nodeName.toLowerCase() == 'a' && target.innerHTML == '删除'){
+                        //拿到当前要删除的数据的id
+                        var id = target.parentNode.id;
+                        $ajax({
+                            method: 'get',
+                            url: 'deleteStudents2.php',
+                            data: {
+                                id: id    // get提交将id拼接到url后面，传到deleteStudents.php页面后，可在php页面通过$_GET数组拿到删除的这条数据的id
+                            },
+                            success: function(result){
+                                var obj = JSON.parse(result);
+                                if(!obj.code){   //为0，删除成功
+                                    oT1.removeChild(target.parentNode.parentNode);
+                                    alert(obj.message);
+                                }else{
+                                    alert(obj.message);
+                                }
+                            },
+                            error: function(msg){
+                                alert(msg);
+                            }
+                        })
+                        return false;  //阻止点击删除进行跳转的默认行为
+                    }
+                }
+
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2>获取学员成绩</h2>
+                </div>
+                <div class="panel-body">
+                    <button id="btn1" class="btn btn-primary">获取所有学员信息</button>
+                    <br>
+                    <br>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <td>学员学号</td>
+                                <td>学员姓名</td>
+                                <td>英语成绩</td>
+                                <td>数学成绩</td>
+                                <td>语文成绩</td>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="t1">
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                    <a href="insertStudents.html">新增学员成绩</a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,17 @@
+showStudents:
+    bootcss.com 网站
+
+        【注】
+        .css  开发版本（有严格的代码缩进，空格、换行(占空间)、代码注释，易于阅读）
+        .min.css  上线版本（压缩了，节省空间）
+
+        bootstrap.css  别人写好的css样式
+
+    前后端交互：(前后端分离开)
+        网络下所有用户都可访问这个页面，只要将localhost换成我电脑的id，通过这个连接就可访问。在html页面点击按钮，ajax发送请求，请求showStudents.php页面去处理数据库中的数据（php页面数据全部取出，并拼接成一个索引数组，转成json格式字符串输出），ajax将php页面传入的字符串运送到.html页面上，然后在.html页面的success方法里，直接拿到数据，通过循环解析到页面上
+
+register:
+        new Date().getTime()   //通过new Date()获取当前系统时间，getTime()转成当前时间的毫秒数 
+
+updateStudents:
+        <input type="hidden" name="id" class="form-control">  <!-- 隐藏表单 -->

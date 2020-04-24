@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>修改用户数据</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+            /* #update{width: 400px;margin: 150px auto;} */
+            #alert_info{margin: 2px;padding: 2px;text-align: center;margin-bottom: 10px;display: none;}
+        </style>
+        <script src="ajax.js"></script>
+        <script>
+            window.onload = function(){
+                var oBtn = document.getElementById('btn1');
+                var oAlert = document.getElementById('alert_info');
+                var aInputs = document.getElementsByTagName('input');
+
+                //给提交按钮添加点击 
+                oBtn.onclick = function(){
+                    $ajax({
+                        method: 'post',
+                        url: 'submitStudents2.php',
+                        data: {
+                            name: aInputs[0].value,
+                            english: aInputs[1].value,
+                            math: aInputs[2].value,
+                            chinese: aInputs[3].value,
+                            id: aInputs[4].value
+                        },
+                        success: function(result){
+                            alert(result);
+                            var obj = JSON.parse(result);
+                            if(obj.code){   
+                                oAlert.className = 'alert alert-danger';
+                            }else{   //如果为0，不为真，注册成功
+                                oAlert.className = 'alert alert-success';
+                                setTimeout(function(){
+                                    location.href = 'showStudents.html';
+                                }, 2000);   //隔2秒跳转登录页面
+                            }
+                            oAlert.style.display = 'block';
+                            oAlert.innerHTML = obj.message;
+                        },
+                        error: function(msg){
+                            alert(msg);
+                        }
+                    })
+                }
+
+
+                var id = valueByName(location.search, 'id');   ////location.search拿到问号?后面的部分
+                // alert(id);  //拿到id后，将用户名和密码的数据填到页面上，数据要通过php操作数据库拿到
+
+                //将id发送到后台php页面，让php页面将我们当前修改的用户数据显示在页面上
+                $ajax({
+                    method: 'get',
+                    url: 'updateStudents2.php',
+                    data: {
+                        id: id
+                    },
+                    success: function(result){
+                        var obj = JSON.parse(result);  //拿到下载的所有数据后，将数据解析成对像
+                        if(!obj.code){  //code为0，下载成功
+                            var row = JSON.parse(obj.message);
+                            aInputs[0].value = row.name;
+                            aInputs[1].value = row.english;
+                            aInputs[2].value = row.math;
+                            aInputs[3].value = row.chinese;
+                            aInputs[4].value = row.id;
+                        }
+                    },
+                    error: function(msg){
+                        alert(msg);
+                    }
+                })
+                
+            }
+
+
+            //search=?name1=value1&name2=value2&name3=value3
+            function valueByName(search, name){
+                var start = search.indexOf(name + '=');  //拿到'n'的下标
+                if(start == -1){  //如果等于-1，没有这个字段
+                    return null;
+                }else{
+                    var end = search.indexOf('&', start);  //查第一个'&'的位置
+                    if(end == -1){   //最后一个值，没有'&'，所以等于-1时，取到最后一个，
+                        end = search.length;
+                    }
+
+                    //提取想要的键值对  拿到的是name=value的字符串
+                    var str = search.substring(start, end);
+                    var arr = str.split('=');
+                    return arr[1];
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="panel panel-primary" id="update">
+                <div class="panel-heading">
+                    修改用户数据
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="username">学员姓名：</label>
+                        <input type="text" name="name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">英语成绩：</label>
+                        <input type="text" name="english" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">数学成绩：</label>
+                        <input type="text" name="math" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">语文成绩：</label>
+                        <input type="text" name="chinese" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" name="id" class="form-control">  <!-- 隐藏表单 -->
+                    </div>
+                    <div id="alert_info" class="alert alert-danger">xxxxxx</div>
+                    <a href="userList.html">查看用户列表</a>
+                    <button id="btn1" class="btn btn-primary pull-right">提交</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

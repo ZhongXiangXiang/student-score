@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Document</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="ajax.js"></script>
+        <script>
+            /* 
+            都拥有提交数据的功能：（二者选其一，不要共存）
+                form表单 点击提交数据以后，需要跳转页面（会自动跳转php页面进行提交数据）
+                ajax 异步进行数据传输（在当前页面进行） 
+
+
+            前后端交互的案例：
+                在客户端上，.html页面输入表单内容，把表单内容通过ajax进行post(或get)提交，将数据全部通过post提交到insertStudents.php页面，在php页面通过$_POST的全局数组拿到数据，php页面有直接操作数据库的功能，所以可以把$_POST里的全部数据取出来，一个一个插在数据库中。
+                插入数据库有可能成功也有可能失败，都会给前台一个回馈，这个回馈可在前台success方法中拿到。这个回馈进行一个统一返回数据格式格式(code和message, 如200 0k, 400 NOT FOUND)
+            */
+            window.onload = function(){
+                var oSubmit = document.getElementById('submit');
+                var aInputs = document.getElementsByTagName('input');
+
+                oSubmit.onclick = function(){
+                    //通过ajax提交数据
+                    $ajax({
+                        method: 'post',
+                        url: 'insertStudents.php',   //提交到insertStudnets.php页面
+                        data: {
+                            name: aInputs[0].value,
+                            english: aInputs[1].value,
+                            math: aInputs[2].value,
+                            chinese: aInputs[3].value
+                        },
+                        success: function(result){
+                            // alert(result);
+                            var obj = JSON.parse(result);
+                            alert(obj.message);
+
+                            //增加成功后删除内容
+                            for(var i = 0; i < aInputs.length; i++){
+                                aInputs[i].value = '';
+                            }
+                        },
+                        error: function(msg){
+                            alert(msg);
+                        }
+                    })
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2>登入学员成绩</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">     <!-- form-grounp 获得最好的排列 -->
+                        <label for="name">学员姓名：</label>   <!-- 因为之前将id设为AI自动增长，所以不需手动输入学员id -->
+                        <input type="text" class="form-control" name="name" />     <!-- form-control将宽度设为100% -->
+                    </div>
+                    <div class="form-group">  
+                        <label for="name">英语成绩：</label>
+                        <input type="text" class="form-control" name="english" />
+                    </div>
+                    <div class="form-group">  
+                        <label for="name">数学成绩：</label>
+                        <input type="text" class="form-control" name="math" />
+                    </div>
+                    <div class="form-group">  
+                        <label for="name">语文成绩：</label>
+                        <input type="text" class="form-control" name="chinese" />
+                    </div>
+                    <div class="form-group">
+                        <button id="submit" class="btn btn-primary form-control">提交学员成绩</button>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <a href="showStudents.html">查看学员成绩</a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
